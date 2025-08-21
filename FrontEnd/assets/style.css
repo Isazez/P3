@@ -59,7 +59,7 @@ header {
 	margin: 50px 0
 }
 section {
-	margin: 50px 0
+	margin: 50px 0;
 }
 
 h1{
@@ -75,7 +75,6 @@ h1 > span {
 	font-family: 'Work Sans';
 	font-size:10px;
 	letter-spacing: 0.1em;
-;
 }
 
 h2{
@@ -84,19 +83,34 @@ h2{
 	font-size: 30px;
 	color: #1D6154
 }
+
+a, header h1{
+	cursor: pointer;
+}
+
+a {
+	text-decoration: none;
+	color: black;
+	font-weight: 400;
+}
+.active-link {
+	font-weight: 600;
+}
 nav ul {
 	display: flex;
 	align-items: center;
 	list-style-type: none;
-
 }
 nav li {
 	padding: 0 10px;
-	font-size: 1.2em;
+	font-size: 1.2em
 }
-
-li:hover {
+li a:hover {
 	color: #B1663C;
+}
+nav img{
+	width: 22px;
+	height: 22px;
 }
 #introduction {
 	display: flex;
@@ -156,34 +170,33 @@ li:hover {
 	width: 100%;
 
 }
-#contact {
+#contact, #login {
 	width: 50%;
-margin: auto;
+	margin: auto;
 }
-#contact > * {
+#contact, #login > * {
 	text-align: center;
-
 }
-#contact h2{
+#contact h2, #login h2{
 	margin-bottom: 20px;
 }
-#contact form {
+#contact form, #login form {
 	text-align: left;
 	margin-top:30px;
 	display: flex;
 	flex-direction: column;
 }
 
-#contact input {
+#contact input, #login input {
 	height: 50px;
 	font-size: 1.2em;
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
-#contact label {
+#contact label, #login label {
 	margin: 2em 0 1em 0;
 }
-#contact textarea {
+#contact textarea, #login textarea {
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
@@ -198,10 +211,28 @@ input[type="submit"]{
 	text-align: center;
 	border-radius: 60px ;
 }
+#login{
+	margin-bottom: 150px; /* to avoid footer overlap */
+}
+#login span, #login p {
+	text-align: center;
+}
+#login span{
+	text-decoration: underline;
+}
+#login p{
+	margin: 37px 0 37px 0;
+	color: firebrick;
+	font-weight: 600;
+	display: none; /* hidden by default, modified with js if error*/
+}
 
 footer nav ul {
 	display: flex;
 	justify-content: flex-end;
-	margin: 2em
+	margin: 2em;
 }
-
+footer a{
+	font-family: 'Work Sans' ;
+	font-size: 14px;
+}

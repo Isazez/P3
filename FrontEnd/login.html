@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<title>Sophie Bluel - Architecte d'intérieur</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap" rel="stylesheet">
+	<meta name="description" content="">
+	<link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+<header>
+	<h1 onclick="window.location.href='//127.0.0.1:5500/FrontEnd/index.html'">Sophie Bluel <span>Architecte d'intérieur</span></h1>
+	<!-- Lien à modifier avec le définitif -->
+	<nav>
+		<ul>
+			<li><a href="index.html#portfolio">projets</a></li>
+			<li><a href="index.html#contact">contact</a></li>
+			<li><a class="active-link" href="login.html">login</a></li>
+			<li><a href="https://www.instagram.com/" target="_blank"><img src="./assets/icons/instagram.png" alt="Instagram"></a></li>
+            <!-- instagram à ajuster -->
+		</ul>
+	</nav>
+</header>
+<main>
+	<section id="login">
+		<h2>Log In</h2>
+		<form action="#" method="post">
+			<label for="name">E-mail</label>
+			<input type="text" name="name" id="name">
+			<label for="email">Mot de passe</label>
+			<input type="email" name="email" id="email">
+			<input type="submit" value="Se connecter">
+            <span><a href="#">Mot de passe oublié</a></span>
+            <p class="login-error-msg">Identifiant ou mot de passe incorrect</p>
+		</form>
+	</section>
+</main>
+
+<footer>
+	<nav>
+		<ul>
+			<li><a href="#">Mentions Légales</a></li>
+			<!-- lien à rajouter-->
+		</ul>
+	</nav>
+</footer>
+<script src="./scripts/login.js"></script>
+</body>
+
+</html>
