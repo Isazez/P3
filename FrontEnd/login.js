@@ -8,7 +8,7 @@ const errorMsg = document.querySelector(".login-error-msg");
 
 //Fonction asynchrone pour gérer la connexion   
 const loginUser = async (email, password) => {
-    
+
         const response = await fetch("http://localhost:5678/api/users/login", {
             // requête API http de type POST /users/login 
             method: "POST",
@@ -31,7 +31,7 @@ const loginUser = async (email, password) => {
 };
 
 // Ajouter au bouton submit un event listener
-loginSubmit.addEventListener("submit", async function(event) {
+loginForm.addEventListener("submit", async function(event) {
     // Prevenir le rechargement par défaut de la page
     event.preventDefault(); 
     // Récupérer les valeurs rentrées
@@ -40,7 +40,4 @@ loginSubmit.addEventListener("submit", async function(event) {
     // Appeler la fonction de connexion
     await loginUser(email, password);
 });
-
-
-
 
