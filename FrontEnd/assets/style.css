@@ -211,6 +211,9 @@ input[type="submit"]{
 	text-align: center;
 	border-radius: 60px ;
 }
+#input:hover, input:active{
+	border : 3px solid rgb(23, 133, 148);
+}
 #login{
 	margin-bottom: 150px; /* to avoid footer overlap */
 }
@@ -220,7 +223,7 @@ input[type="submit"]{
 #login span{
 	text-decoration: underline;
 }
-#login p{
+.login-error-msg {
 	margin: 37px 0 37px 0;
 	color: firebrick;
 	font-weight: 600;
