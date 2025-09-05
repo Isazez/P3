@@ -11,32 +11,46 @@
 	<link rel="stylesheet" href="./assets/style.css">
 </head>
 <body>
+
+	<!--Connexion admin-->
+	<div class="admin-header">
+		<i class="bi bi-pencil-square"></i>
+		<p>Mode édition</p>
+	</div>
+
 <header>
-	<h1 onclick="window.location.href='//127.0.0.1:5500/FrontEnd/index.html'">Sophie Bluel <span>Architecte d'intérieur</span></h1>
-	<!-- Lien à modifier avec le définitif -->
+	<!--banniere-->
+	<a href="index.html">
+		<h1>Sophie Bluel 
+			<span>Architecte d'intérieur</span>
+		</h1>
+	</a>
+	<!--navigation principale-->
 	<nav>
 		<ul>
-			<li><a href="index.html#portfolio">projets</a></li>
-			<li><a href="index.html#contact">contact</a></li>
-			<li><a class="active-link" href="login.html">login</a></li>
+			<li><a href="#portfolio">projets</a></li>
+			<li><a href="#contact">contact</a></li>
+			<li class="logInOut"><a href="login.html">login</a></li>
 			<li><a href="https://www.instagram.com/" target="_blank"><img src="./assets/icons/instagram.png" alt="Instagram"></a></li>
             <!-- instagram à ajuster -->
 		</ul>
 	</nav>
 </header>
 <main>
-	<section id="login">
-		<h2>Log In</h2>
-		<form id="login-form" action="#" method="post">
-			<label for="id">E-mail</label>
-			<input type="email" name="email" id="email">
-			<label for="mp">Mot de passe</label>
-			<input type="password" name="password" id="password">
-			<input id="login-submit" type="submit" value="Se connecter">
-            <span><a href="#">Mot de passe oublié</a></span>
-            <p class="login-error-msg">Identifiant ou mot de passe incorrect</p>
-		</form>
-	</section>
+        <section id="login">
+            <h2>Log In</h2>
+            <form id="login-form" action="#" method="post">
+                <label for="login-email">E-mail</label>
+                <input type="email" name="email" id="login-email" required>
+
+                <label for="login-password">Mot de passe</label>
+                <input type="password" name="password" id="login-password" required>
+
+                <input id="login-submit" type="submit" value="Se connecter">
+                <span><a href="#">Mot de passe oublié</a></span>
+                <p class="login-error-msg">Identifiant ou mot de passe incorrect</p>
+            </form>
+        </section>
 </main>
 
 <footer>
@@ -47,7 +61,7 @@
 		</ul>
 	</nav>
 </footer>
-<script src="./login.js"></script>
+<script src="./login.js" defer></script>
 </body>
 
 </html>
