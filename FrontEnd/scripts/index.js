@@ -1,59 +1,75 @@
-///////////GALERIE DES TRAVAUX AVEC FILTRES///////////
+/////////// GALERIE D'IMAGES AVEC LES TRAVAUX DE L'API ///////////
 
-// PROMISES
+    // recup de la div qui va contenir la galerie et création avec le paramètre data seul (cf plus bas)
+    const galleryPortfolio = document.querySelector(".gallery");
 
-    //2// on crée une fonction createGallery qui va créer la galerie
-    // on place data (cf en dessous) en paramètre de la fonction
-    const createGallery = data => {
+    // PROMISES on crée une fonction createGallery qui va créer la galerie
+    const createGallery = (data, gallery = galleryPortfolio, isHomePage = true) => {
 
-        //1//on crée une variable data qui va contenir la galerie
-        const gallery = document.querySelector(".gallery");
-            //on vide le contenu initial de la section (on peut aussi le mettre en commentaire dans le html)
-            gallery.innerHTML = "";
-            //on parcourt chaque objet dans le tableau de la database works et
-            data.forEach(work => {
-            //pour chacun on va créer un élément figure pour chaque œuvre
+        // on vide le contenu initial de la section (on peut aussi le mettre en commentaire dans le html)
+        gallery.innerHTML = "";
+        // on parcourt chaque objet dans le tableau de la database works et
+        data.forEach(work => {
+            // pour chacun des travaux on crée un élément figure
+            // (Solution alernative moins optimale : .innerHTML)
             const figure = document.createElement("figure");
-
-            /*
-            Solution alernative en injectant du html (moins optimisée pour la performance) :
-            figure.innerHTML = `
-            <img src="${work.imageUrl}" alt="${work.title}">
-            <figcaption>${work.title}</figcaption> `; 
-            */
-
-            //on crée un élément img qui va récupérer l'url de l'image et le titre de l'œuvre
+            // on crée un element image qui récupère l'url de l'image et le titre
             const img = document.createElement("img");
             img.src = work.imageUrl;
             img.alt = work.title;
-            //on crée un élément figcaption qui va récupérer le titre de l'œuvre
-            const figcaption = document.createElement("figcaption");
-            figcaption.textContent = work.title;
-
-            // on ajoute l'élément figure (et les sous elements) à la section gallery
-            gallery.appendChild(figure);
+            // on ajoute l'élément image à figure
             figure.appendChild(img);
-            figure.appendChild(figcaption);
+
+            if(isHomePage) {
+                // Pour la galerie porfolio (pas sur la modale), 
+                const figcaption = document.createElement("figcaption");
+                figcaption.textContent = work.title;
+                figure.appendChild(figcaption);
+            } else {
+                // Si on n'est pas sur le portfolio, on est dans la modale et dans ce cas :
+                // Bouton de suppression (icône poubelle)
+                const deleteBtn = document.createElement("button");
+                deleteBtn.classList.add("delete-btn");
+                deleteBtn.setAttribute("aria-label", `Supprimer ${work.title}`);
+                deleteBtn.innerHTML = '<i class="bi bi-trash-fill"></i>';
+                
+                // Action au clic : supprimer le travail
+                deleteBtn.addEventListener("click", async () => {
+                    try {
+                        const response = await deleteWorkById(work.Id);
+
+                        if (response.ok) {
+                            // si suppression ok, on recharge les galeries
+                            works = await getWorks ();
+                            // on recrée la galerie pour le portfolio de la Home Page
+                            createGallery (await getWorks());
+                            // on recrée la galerie pour la modale 
+                            createGallery (works, adminGallery, false);
+                        } else {
+                            alert('Erreur lors de la suppression');
+                        }
+
+                    } catch (error) {
+                        console.error(error);
+                        alert("Impossible de supprimer l'image")
+                    }
+                }); 
+            // On ajoute l’image + le bouton poubelle dans le figure
+            figure.append(img, deleteBtn);
+            }
+        // on ajoute dans tous les cas l'élément figure aux gallery
+        gallery.appendChild(figure);
         });
+    };
 
-    }
 
-    /*fetch ("http://localhost:5678/api/works")
-    //on fait une requête fetch pour récupérer les données de l'API
-        .then(response => response.json())
-        //on récupère les data et on les transforme en JSON
-        .then(data => createGallery(data))
-        //3//on passe les données à la fonction createGallery
-    */
 
-//METHODE AVEC LES ASYNC/AWAIT
+// RECUPERER LES DONNEES DE L'API avec fonction asynchrone ASYNC AWAIT (ancienne syntaxe .then)
 
-    //on crée une fonction asynchrone fetchWorks pour récupérer les données de l'API
-    // on utilise async/await pour simplifier la syntaxe des promesses
     const getWorks = async () => {
-        //on crée un variable response qui va chercher les données
-        // on utilise await pour attendre la réponse de la requête fetch
-        // on utilise l'URL de l'API pour récupérer les œuvres
+        // variable response qui va chercher les données
+        // await pour attendre la réponse de la requête fetch
+        // URL de l'API pour récupérer les travaux
         const response = await fetch("http://localhost:5678/api/works");
         //on vérifie si la réponse est ok (statut 200)
         //une fois qu'on a la réponse, on veut récupérer les data en JSON
@@ -62,6 +78,21 @@
         return data; 
         }
     
+        // ???? pourquoi id n'est pas entre ()
+    // fonction dédiée à supprimer les images
+    const deleteWorkById = async id => {
+        const response = await fetch(`http://localhost:5678/api/works/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+            }        
+        })
+        //celle ci ne retourne pas de data contrairement à la précédente
+        return response.ok;
+    }
+
+
+
     /////////// FILTRES ///////////
 
     //retirer la classe active de tous les boutons et ajouter la classe active au bouton cliqué
@@ -130,8 +161,7 @@
 
 /////////// GESTION DE L'INTERFACE ADMIN ///////////
 
-    // A MODIFIER EN FONCTION FLECHEE
-    function loginAdminOk() {
+    const loginAdminOk = () => {
 
         // chercher le token dans le localstorage 
         const token = localStorage.getItem("token");
@@ -188,11 +218,12 @@
     const adminGallery = document.querySelector('.admin-gallery');
     const addPhotoForm = document.getElementById("add-photo-form");
 
-    // Affiche soit la galerie admin, soit le formulaire d’ajout
-    function showModalSection(showAddImage) {
-        if (showAddImage) {
-            modalGallery.classList.add("hidden");
-            modalAddImg.classList.remove("hidden");
+    // Affiche soit la galerie en mode admin, soit le formulaire d’ajout d'image
+    const showModalSection = (showAddImage) => {
+        // si on est sur add image
+        if (showAddImage) { 
+            modalGallery.classList.add("hidden"); // cache la gallery admin
+            modalAddImg.classList.remove("hidden"); // affiche le formulaire d'ajout d'image
         } else {
             modalAddImg.classList.add("hidden");
             modalGallery.classList.remove("hidden");
@@ -200,33 +231,33 @@
     }
 
     ////* Ouverture de la modale *////
+    const openModal = (event) => {
+        event.preventDefault();     // évite le scroll vers #modal
+        modal.showModal();          // méthode propre à JS pour ouvrir la fenêtre <dialog>
+        showModalSection(false);    // par défaut, on affiche la galerie
+        createGallery (works, adminGallery, false);  // charge les images dans la galerie admin
+    }
     // Écouteur sur le bouton "modifier"
     trigger.addEventListener("click", openModal);
-    function openModal(event) {
-        event.preventDefault();     // évite le scroll vers #modal
-        modal.showModal();          // ouvre la fenêtre <dialog>
-        showModalSection(false);    // par défaut, on affiche la galerie
-        renderAdminGallery();       // charge les images dans la galerie admin
-    }
 
     ////* Fermeture de la modale *////
 
     // Méthode .close de JS
-    function closeModal() {
-        modal.close(); 
+    const closeModal = () => {
+        modal.close(); // méthode propre à JS pour fermer la fenêtre <dialog>
     }
     // Fermeture avec les croix
-    closeBtns.forEach(function (btn) {
+    closeBtns.forEach((btn) => {
         btn.addEventListener("click", closeModal);
     });
     // Fermeture avec clic sur l’overlay noir
-    modal.addEventListener("click", function (event) {
+    modal.addEventListener("click", (event) => {
         if (event.target === modal) {
             closeModal();
         }
     });
     // Fermeture avec la touche Echap
-    window.addEventListener("keydown", function (event) {
+    window.addEventListener("keydown", (event) => {
         if (event.key === "Escape" && modal.open || event.key === "Esc" && modal.open) {
             closeModal();
         }
@@ -236,75 +267,21 @@
     ////* Modules internes galerie et ajout photo *////
 
     // Navigation vers la section "ajout photo"
-    addImgBtn.addEventListener("click", goToAddImageSection);
-    function goToAddImageSection() {
+    const goToAddImageSection = () => {
         showModalSection(true);
         loadCategories();  // charge les catégories dans le <select>
     }
+    addImgBtn.addEventListener("click", goToAddImageSection);
+
     // Retour à la galerie
-    backBtn.addEventListener("click", goBackToGallery);
-    function goBackToGallery() {
+    const goBackToGallery = () => {
         showModalSection(false);
     }
+    backBtn.addEventListener("click", goBackToGallery);
     
 
-    ////* Rendu de la galerie admin dans la modale *////
-    async function renderAdminGallery() {
-        // On vide d’abord la galerie admin
-        adminGallery.innerHTML = "";
-
-        // On récupère les travaux depuis l’API
-        const worksData = await getWorks();
-
-        // On parcourt chaque travail et on crée l’affichage
-        worksData.forEach(function (work) {
-            // Conteneur figure
-            const figure = document.createElement("figure");
-
-            // Image de l’œuvre
-            const img = document.createElement("img");
-            img.src = work.imageUrl;
-            img.alt = work.title;
-
-            // Bouton de suppression (icône poubelle)
-            const deleteBtn = document.createElement("button");
-            deleteBtn.classList.add("delete-btn");
-            deleteBtn.setAttribute("aria-label", `Supprimer ${work.title}`);
-            deleteBtn.innerHTML = '<i class="bi bi-trash-fill"></i>';
-
-            // Action au clic : supprimer le travail
-            deleteBtn.addEventListener("click", async function () {
-                try {
-                    const response = await fetch(`http://localhost:5678/api/works/${work.id}`, {
-                        method: "DELETE",
-                        headers: {
-                            "Authorization": `Bearer ${localStorage.getItem("token")}`
-                        }
-                    });
-
-                    if (response.ok) {
-                        // Si suppression OK : on recharge les galeries
-                        await renderAdminGallery();
-                        createGallery(await getWorks());
-                    } else {
-                        alert("Erreur lors de la suppression");
-                    }
-                } catch (error) {
-                    console.error(error);
-                    alert("Impossible de supprimer l'image");
-                }
-            });
-
-            // On ajoute l’image + le bouton poubelle dans le figure
-            figure.append(img, deleteBtn);
-
-            // On ajoute le figure dans la galerie admin
-            adminGallery.appendChild(figure);
-        });
-    }
-
     ////* Chargement des catégories dans le formulaire d’ajout *////
-    async function loadCategories() {
+    const loadCategories = async () => {
         try {
             const response = await fetch("http://localhost:5678/api/categories");
 
@@ -321,7 +298,7 @@
             select.innerHTML = '<option value="">-- Choisir --</option>';
 
             // On ajoute chaque catégorie comme <option>
-            categories.forEach(function (cat) {
+            categories.forEach((cat) => {
                 const option = document.createElement("option");
                 option.value = cat.id;
                 option.textContent = cat.name;
@@ -333,7 +310,7 @@
     }
 
     ////* Gestion du formulaire d’ajout de photo *////
-    async function handleAddPhoto(event) {
+    const handleAddPhoto = async (event) => {
         event.preventDefault(); // évite rechargement de la page
 
         // Récupère les données saisies
@@ -350,7 +327,7 @@
 
             if (response.ok) {
                 // Mise à jour des deux galeries
-                await renderAdminGallery();
+                createGallery (works, adminGallery, false);
                 createGallery(await getWorks());
 
                 // Réinitialise le formulaire

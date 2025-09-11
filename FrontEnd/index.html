@@ -120,7 +120,7 @@
 			<h3 class="modal-title">Ajout photo</h3>
 			<div class="admin-img">
 				<!-- contenu à faire en JS -->
-				<form id="add-photo-form">
+				<form enctype="multipart/form-data" method="post" name="fileinfo" id="add-photo-form">
 					<label for="image">+ Ajouter photo</label>
 					<input type="file" id="image" name="image" accept="image/*" required>
 
@@ -134,6 +134,7 @@
 
 					<button type="submit" class="btn-validate">Valider</button>
 				</form>
+			</div>
 		</div>
 	</div>
 
