@@ -130,170 +130,247 @@
 
 /////////// GESTION DE L'INTERFACE ADMIN ///////////
 
-// A MODIFIER EN FONCTION FLECHEE
-function loginAdminOk() {
+    // A MODIFIER EN FONCTION FLECHEE
+    function loginAdminOk() {
 
-    // chercher le token dans le localstorage 
-    const token = localStorage.getItem("token");
+        // chercher le token dans le localstorage 
+        const token = localStorage.getItem("token");
 
-    // récupérer dans le DOM les elements à modifier :
-    // apparition bandeau d'en tete et bouton portfolio, 
-    // modification de la mention login du menu en logout
-    // disparition des filtres catégories
-    const adminHeader = document.querySelector(".admin-header");
-    const editButton = document.querySelector(".admin-portfolio-btn");
-    const filtersSection = document.querySelector(".categories");
-    const logInOutLink = document.querySelector(".logInOut a");
+        // récupérer dans le DOM les elements à modifier :
+        // apparition bandeau d'en tete et bouton portfolio, 
+        // modification de la mention login du menu en logout
+        // disparition des filtres catégories
+        const adminHeader = document.querySelector(".admin-header");
+        const editButton = document.querySelector(".admin-portfolio-btn");
+        const filtersSection = document.querySelector(".categories");
+        const logInOutLink = document.querySelector(".logInOut a");
 
-    // si le token existe (isLoggedIn) 
-    // modifie le display none de l'en-tete en display flex 
-    adminHeader.style.display = token ? "flex" : "none";
-    // modifie le display none du bouton modifier du portfolio en display flex 
-    editButton.style.display = token ? "flex" : "none";
-    // fait disparaitre les filtres catégories
-    filtersSection.style.display = token ? "none" : "flex";
+        // si le token existe (isLoggedIn) 
+        // modifie le display none de l'en-tete en display flex 
+        adminHeader.style.display = token ? "flex" : "none";
+        // modifie le display none du bouton modifier du portfolio en display flex 
+        editButton.style.display = token ? "flex" : "none";
+        // fait disparaitre les filtres catégories
+        filtersSection.style.display = token ? "none" : "flex";
 
-    // Gestion du lien login/logout
-    if (token) {
-        // une fois connecté, modification du texte "login" en "logout"
-        logInOutLink.textContent = "logout";
-        // redirection avec lien vide car reload s'en charge
-        logInOutLink.href = "#";
-        // action au clic
-        logInOutLink.onclick = (e) => {
-            // empecher le rechargement
-            e.preventDefault();
-            // retirer le token
-            localStorage.removeItem("token");
-            // recharge la page dans son état initial
-            location.reload();
-        };
+        // Gestion du lien login/logout
+        if (token) {
+            // une fois connecté, modification du texte "login" en "logout"
+            logInOutLink.textContent = "logout";
+            // redirection avec lien vide car reload s'en charge
+            logInOutLink.href = "#";
+            // action au clic
+            logInOutLink.onclick = (e) => {
+                // empecher le rechargement
+                e.preventDefault();
+                // retirer le token
+                localStorage.removeItem("token");
+                // recharge la page dans son état initial
+                location.reload();
+            };
+        }
+
     }
-
-}
 
 
 /////////// MODALE ///////////
 
-////* recup elements dom *////
 
-const modal = document.querySelector('.modal');
-const modalGallery = document.querySelector('.modal-gallery');
-const modalAddImg = document.querySelector('.modal-add-img');
+    ////* Récupération des éléments du DOM *////
+    const modal = document.querySelector('.modal');
+    const modalGallery = document.querySelector('.modal-gallery');
+    const modalAddImg = document.querySelector('.modal-add-img');
 
-const trigger = document.querySelector('.modal-link');
-const closeBtns = document.querySelectorAll('.btn-modal-close');
-const backBtn = document.querySelector('.btn-back-gallery');
-const addImgBtn = document.querySelector('.btn-add-img');
+    const trigger = document.querySelector('.modal-link');
+    const closeBtns = document.querySelectorAll('.btn-modal-close');
+    const backBtn = document.querySelector('.btn-back-gallery');
+    const addImgBtn = document.querySelector('.btn-add-img');
+    const adminGallery = document.querySelector('.admin-gallery');
+    const addPhotoForm = document.getElementById("add-photo-form");
 
-////* Ouverture de la fenetre générale avec la méthode .showModal *////
+    // Affiche soit la galerie admin, soit le formulaire d’ajout
+    function showModalSection(showAddImage) {
+        if (showAddImage) {
+            modalGallery.classList.add("hidden");
+            modalAddImg.classList.remove("hidden");
+        } else {
+            modalAddImg.classList.add("hidden");
+            modalGallery.classList.remove("hidden");
+        }
+    }
 
-// ouverture modale au click sur "modifier" dans l'interface admin
-// le (e) event est l’objet événement que le navigateur crée automatiquement 
-// lorsqu’une action utilisateur se produit (clic, touche clavier, scroll, etc.).
-trigger.addEventListener("click", (e) => {
-    //le lien "Mode édition" redirige normalement la page vers #modal.
-    // on prévient donc le comportement par défaut du navigateur qui scrollerait jusqu'a #modal sinon
-    e.preventDefault();
-    modal.showModal(); // Ouvre la fenêtre globale
-    modalGallery.classList.remove("hidden"); // Affiche la partie Galerie
-    modalAddImg.classList.add("hidden"); // Cache la partie ajout d'image
-        // injection des images directement depuis l'API
-    renderAdminGallery();
-});
+    ////* Ouverture de la modale *////
+    function openModal(event) {
+        event.preventDefault();     // évite le scroll vers #modal
+        modal.showModal();          // ouvre la fenêtre <dialog>
+        showModalSection(false);    // par défaut, on affiche la galerie
+        renderAdminGallery();       // charge les images dans la galerie admin
+    }
 
+    // Écouteur sur le bouton "modifier"
+    trigger.addEventListener("click", openModal);
 
-////* gestion de la fermeture avec la méthode .close *////
-
-// clic sur la croix
-// pour fermer la modale, peu importe où ou comment on a cliqué
-// --> pas besoin de définir de paramètre (e) dans la fonction.
-closeBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
+    ////* Fermeture de la modale *////
+    function closeModal() {
         modal.close();
+    }
+
+    // Fermeture avec les croix
+    closeBtns.forEach(function (btn) {
+        btn.addEventListener("click", closeModal);
     });
-});
-// clic sur overlay
-modal.addEventListener("click", (e) => {
-    //clic sur l’overlay → e.target est le <dialog> lui-même → fermeture.
-    //clic sur le contenu → e.target est un <div> ou <button> → pas de fermeture.
-    if (e.target === modal) { 
-        modal.close();
+
+    // Fermeture avec clic sur l’overlay noir
+    modal.addEventListener("click", function (event) {
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Fermeture avec la touche Echap
+    window.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && modal.open) {
+            closeModal();
+        }
+    });
+
+    ////* Navigation interne (galerie ↔ ajout photo) *////
+
+    // Aller vers la section "ajout photo"
+    function goToAddImageSection() {
+        showModalSection(true);
+        loadCategories();  // charge les catégories dans le <select>
     }
-});
-// bouton echap
-window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modal.open) {
-        modal.close();
+    addImgBtn.addEventListener("click", goToAddImageSection);
+
+    // Revenir vers la galerie
+    function goBackToGallery() {
+        showModalSection(false);
     }
-});
+    backBtn.addEventListener("click", goBackToGallery);
 
 
-////* Navigation entre les deux parties internes de la modale *////
+    ////* Rendu de la galerie admin dans la modale *////
+    async function renderAdminGallery() {
+        // On vide d’abord la galerie admin
+        adminGallery.innerHTML = "";
 
-// Afficher la modale ajout d'image au clic sur le bouton dans la premiere modale
-addImgBtn.addEventListener("click", () => {
-    modalGallery.classList.add("hidden"); // cache la partie gallery
-    modalAddImg.classList.remove("hidden"); // affiche la partie ajout d'image
-});
+        // On récupère les travaux depuis l’API
+        const worksData = await getWorks();
 
-// Retour à la galerie depuis la seconde modale au clic sur le bouton back
-backBtn.addEventListener("click", () => {
-    modalAddImg.classList.add("hidden"); // cache la partie ajout d'image
-    modalGallery.classList.remove("hidden"); // affiche la partie gallery
-});
+        // On parcourt chaque travail et on crée l’affichage
+        worksData.forEach(function (work) {
+            // Conteneur figure
+            const figure = document.createElement("figure");
 
+            // Image de l’œuvre
+            const img = document.createElement("img");
+            img.src = work.imageUrl;
+            img.alt = work.title;
 
-////* Rendu de la gallery dans la modale  *////
+            // Bouton de suppression (icône poubelle)
+            const deleteBtn = document.createElement("button");
+            deleteBtn.classList.add("delete-btn");
+            deleteBtn.setAttribute("aria-label", `Supprimer ${work.title}`);
+            deleteBtn.innerHTML = '<i class="bi bi-trash-fill"></i>';
 
+            // Action au clic : supprimer le travail
+            deleteBtn.addEventListener("click", async function () {
+                try {
+                    const response = await fetch(`http://localhost:5678/api/works/${work.id}`, {
+                        method: "DELETE",
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem("token")}`
+                        }
+                    });
 
-const adminGallery = document.querySelector('.admin-gallery');
-
-const renderAdminGallery = async () => {
-    adminGallery.innerHTML = "";
-
-    // récupération des travaux depuis l'API
-    const worksData = await getWorks();
-
-    worksData.forEach(work => {
-        const figure = document.createElement("figure");
-
-        const img = document.createElement("img");
-        img.src = work.imageUrl;
-        img.alt = work.title;
-
-        // bouton suppression sur chaque image 
-        const delBtn = document.createElement("button");
-        delBtn.classList.add("delete-btn");
-        delBtn.setAttribute("aria-label", `Supprimer ${work.title}`);
-        // à modifier par corbeille
-        delBtn.innerHTML = "×";
-
-        // au clic sur le bouton corbeille
-        delBtn.addEventListener("click", async () => {
-            try {
-                const res = await fetch(`http://localhost:5678/api/works/${work.id}`, {
-                    method: "DELETE",
-                    headers: {
-                        "Authorization": `Bearer ${localStorage.getItem("token")}`
+                    if (response.ok) {
+                        // Si suppression OK : on recharge les galeries
+                        await renderAdminGallery();
+                        createGallery(await getWorks());
+                    } else {
+                        alert("Erreur lors de la suppression");
                     }
-                });
+                } catch (error) {
+                    console.error(error);
+                    alert("Impossible de supprimer l'image");
+                }
+            });
 
-                if (res.ok) {
-                    // rafraîchir les galeries après suppression
-                    await renderAdminGallery();
-                    createGallery(await getWorks());
-                } else alert("Erreur suppression");
-            } catch (err) {
-                console.error(err);
-                alert("Impossible de supprimer l'image");
-            }
+            // On ajoute l’image + le bouton poubelle dans le figure
+            figure.append(img, deleteBtn);
+
+            // On ajoute le figure dans la galerie admin
+            adminGallery.appendChild(figure);
         });
+    }
 
-        figure.append(img, delBtn);
-        adminGallery.appendChild(figure);
-    });
-};
+    ////* Chargement des catégories dans le formulaire d’ajout *////
+    async function loadCategories() {
+        try {
+            const response = await fetch("http://localhost:5678/api/categories");
+
+            if (!response.ok) {
+                throw new Error("Erreur lors du chargement des catégories");
+            }
+
+            const categories = await response.json();
+
+            // Sélecteur <select> des catégories
+            const select = document.querySelector("#category");
+
+            // On réinitialise le contenu
+            select.innerHTML = '<option value="">-- Choisir --</option>';
+
+            // On ajoute chaque catégorie comme <option>
+            categories.forEach(function (cat) {
+                const option = document.createElement("option");
+                option.value = cat.id;
+                option.textContent = cat.name;
+                select.appendChild(option);
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    ////* Gestion du formulaire d’ajout de photo *////
+    async function handleAddPhoto(event) {
+        event.preventDefault(); // évite rechargement de la page
+
+        // Récupère les données saisies
+        const formData = new FormData(addPhotoForm);
+
+        try {
+            const response = await fetch("http://localhost:5678/api/works", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                },
+                body: formData
+            });
+
+            if (response.ok) {
+                // Mise à jour des deux galeries
+                await renderAdminGallery();
+                createGallery(await getWorks());
+
+                // Réinitialise le formulaire
+                addPhotoForm.reset();
+
+                // Retour automatique à la galerie
+                showModalSection(false);
+            } else {
+                alert("Erreur lors de l’ajout de l’image");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Impossible d’ajouter l’image");
+        }
+    }
+
+    // Écouteur sur la soumission du formulaire
+    addPhotoForm.addEventListener("submit", handleAddPhoto);
 
 
 

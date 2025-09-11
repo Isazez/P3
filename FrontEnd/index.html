@@ -120,16 +120,20 @@
 			<h3 class="modal-title">Ajout photo</h3>
 			<div class="admin-img">
 				<!-- contenu à faire en JS -->
-				<form action="">
-					<label for="">+ Ajouter photo</label>
-					<input type="text">
-					<label for="">Titre</label>
-					<input type="text">
-					<label for="">Catégorie</label>
-					<input type="text">
+				<form id="add-photo-form">
+					<label for="image">+ Ajouter photo</label>
+					<input type="file" id="image" name="image" accept="image/*" required>
+
+					<label for="title">Titre</label>
+					<input type="text" id="title" name="title" required>
+
+					<label for="category">Catégorie</label>
+					<select id="category" name="category" required>
+					<option value="">-- Catégorie --</option>
+					</select>
+
+					<button type="submit" class="btn-validate">Valider</button>
 				</form>
-			</div>
-        <button type="submit" class="btn-validate">Valider</button>
 		</div>
 	</div>
 
