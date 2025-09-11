@@ -200,6 +200,8 @@
     }
 
     ////* Ouverture de la modale *////
+    // Écouteur sur le bouton "modifier"
+    trigger.addEventListener("click", openModal);
     function openModal(event) {
         event.preventDefault();     // évite le scroll vers #modal
         modal.showModal();          // ouvre la fenêtre <dialog>
@@ -207,48 +209,44 @@
         renderAdminGallery();       // charge les images dans la galerie admin
     }
 
-    // Écouteur sur le bouton "modifier"
-    trigger.addEventListener("click", openModal);
-
     ////* Fermeture de la modale *////
-    function closeModal() {
-        modal.close();
-    }
 
+    // Méthode .close de JS
+    function closeModal() {
+        modal.close(); 
+    }
     // Fermeture avec les croix
     closeBtns.forEach(function (btn) {
         btn.addEventListener("click", closeModal);
     });
-
     // Fermeture avec clic sur l’overlay noir
     modal.addEventListener("click", function (event) {
         if (event.target === modal) {
             closeModal();
         }
     });
-
     // Fermeture avec la touche Echap
     window.addEventListener("keydown", function (event) {
-        if (event.key === "Escape" && modal.open) {
+        if (event.key === "Escape" && modal.open || event.key === "Esc" && modal.open) {
             closeModal();
         }
     });
 
-    ////* Navigation interne (galerie ↔ ajout photo) *////
 
-    // Aller vers la section "ajout photo"
+    ////* Modules internes galerie et ajout photo *////
+
+    // Navigation vers la section "ajout photo"
+    addImgBtn.addEventListener("click", goToAddImageSection);
     function goToAddImageSection() {
         showModalSection(true);
         loadCategories();  // charge les catégories dans le <select>
     }
-    addImgBtn.addEventListener("click", goToAddImageSection);
-
-    // Revenir vers la galerie
+    // Retour à la galerie
+    backBtn.addEventListener("click", goBackToGallery);
     function goBackToGallery() {
         showModalSection(false);
     }
-    backBtn.addEventListener("click", goBackToGallery);
-
+    
 
     ////* Rendu de la galerie admin dans la modale *////
     async function renderAdminGallery() {
