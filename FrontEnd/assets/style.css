@@ -231,12 +231,18 @@ input[type="submit"]{
 #login span{
 	text-decoration: underline;
 }
-.login-error-msg {
+.login-error-msg, .add-img-error-msg, .add-img-ok-msg {
 	margin: 37px 0 37px 0;
 	color: firebrick;
 	font-weight: 600;
 	display: none; /* hidden by default, modified with js if error*/
 }
+.add-img-ok-msg {
+	color : #1D6154;
+}
+
+
+
 
 /* interface admin */
 .admin-header{
@@ -391,7 +397,38 @@ input[type="submit"]{
 	display: none;
 }
 
+/* Zone de téléchargement (avant choix image) */
+.upload-area {
+  background-color: #E8F1F6;
+  border-radius: 5px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+}
 
+.upload-area i {
+  font-size: 40px;
+  color: #B9C5CC;
+}
+
+.upload-area p {
+  margin: 10px 0 0;
+  color: #444;
+  font-size: 14px;
+}
+
+/* Aperçu de l’image */
+.preview {
+  margin: 15px 0;
+}
+
+.preview img {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 5px;
+}
 
 
 

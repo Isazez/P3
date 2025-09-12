@@ -36,7 +36,7 @@
                 // Action au clic : supprimer le travail
                 deleteBtn.addEventListener("click", async () => {
                     try {
-                        const response = await deleteWorkById(work.Id);
+                        const response = await deleteWorkById(work.id);
 
                         if (response.ok) {
                             // si suppression ok, on recharge les galeries
@@ -88,7 +88,7 @@
             }        
         })
         //celle ci ne retourne pas de data contrairement à la précédente
-        return response.ok;
+        return response; // analysée par le booléen
     }
 
 
@@ -309,46 +309,99 @@
         }
     }
 
-    ////* Gestion du formulaire d’ajout de photo *////
-    const handleAddPhoto = async (event) => {
-        event.preventDefault(); // évite rechargement de la page
+    
+////* Gestion du formulaire d’ajout de photo *////
 
-        // Récupère les données saisies
-        const formData = new FormData(addPhotoForm);
+// recupère l'emplacement à remplir d'un message de validation ou d'echec
+const errorAddImg = document.querySelector(".add-img-error-msg");
+const msgAddImgOK = document.querySelector(".add-img-ok-msg");
 
-        try {
-            const response = await fetch("http://localhost:5678/api/works", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`
-                },
-                body: formData
-            });
+// Récupère les éléments pour la préview interne de add-img
+const photoInput = document.getElementById("photoInput");
+const uploadArea = document.querySelector(".upload-area");
+const preview = document.querySelector(".preview");
+const previewImage = document.getElementById("previewImage");
 
-            if (response.ok) {
-                // Mise à jour des deux galeries
-                createGallery (works, adminGallery, false);
-                createGallery(await getWorks());
+// Clic sur la zone -> déclenche input file
+uploadArea.addEventListener("click", () => {
+  photoInput.click();
+});
 
-                // Réinitialise le formulaire
-                addPhotoForm.reset();
+// Affiche un aperçu de l'image choisie
+photoInput.addEventListener("change", () => {
+  const file = photoInput.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewImage.src = e.target.result;
+      preview.classList.remove("hidden");  // montre l’aperçu
+      uploadArea.classList.add("hidden");  // cache la zone d’upload
+    };
+    reader.readAsDataURL(file);
+  }
+});
 
-                // Retour automatique à la galerie
-                showModalSection(false);
-            } else {
-                alert("Erreur lors de l’ajout de l’image");
-            }
-        } catch (error) {
-            console.error(error);
-            alert("Impossible d’ajouter l’image");
+// gestion du formulaire d'ajout d'image à la database et à la galerie portfolio
+addPhotoForm.addEventListener("submit", async (event) => {
+    event.preventDefault(); // empêche le rechargement de la page
+
+    // Réinitialiser les messages avant chaque tentative
+        errorAddImg.style.display = "none";
+        msgAddImgOK.style.display = "none";
+
+      // Vérifie que l’image a bien été choisie
+        if (!photoInput.files[0]) {
+            errorAddImg.textContent = "Veuillez sélectionner une image.";
+            errorAddImg.style.display = "block";
+            return;
         }
+
+// Récupère les données du formulaire (image, titre, catégorie)
+    const formData = new FormData(addPhotoForm);
+
+    try {
+        const response = await fetch("http://localhost:5678/api/works", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+                // ⚠️ Ne pas mettre Content-Type, FormData le gère automatiquement
+            },
+            body: formData
+        });
+
+        if (response.ok) {
+            // On recharge la liste des travaux depuis l’API
+            works = await getWorks();
+
+            // Mise à jour de la galerie sur la page principale
+            createGallery(works);
+            // Mise à jour de la galerie dans la modale admin
+            createGallery(works, adminGallery, false);
+
+            // Réinitialise le formulaire
+            addPhotoForm.reset();
+
+            // Réinitialiser la preview et la zone upload
+            previewImage.src = "";
+            preview.classList.add("hidden");
+            uploadArea.classList.remove("hidden");    
+
+            // Retour automatique à la galerie de la modale
+            showModalSection(false);
+
+            //message de validation à afficher sur la modale partie gallery;
+            msgAddImgOK.style.display = "block";
+        } else {
+            //message d'erreur à afficher sous le formulaire
+            errorAddImg.style.display = "block";
+        }
+    } catch (error) {
+        console.error(error);
+        alert("❌ Impossible d’ajouter l’image (problème serveur ou réseau)");
     }
-
-    // Écouteur sur la soumission du formulaire
-    addPhotoForm.addEventListener("submit", handleAddPhoto);
+});
 
 
-
-    // Appel des fonctions
-    init(); // travaux et filtres
-    loginAdminOk(); // login
+// Appel des fonctions
+init(); // travaux et filtres
+loginAdminOk(); // login

@@ -106,23 +106,42 @@
 			<div class="admin-gallery">
 				<!-- images injectées en JS -->
 			</div>
+			<p class="add-img-ok-msg">Données correctement ajoutées</p>
 			<button class="btn-add-img">Ajouter une photo</button>
 		</div>
 	</div>
 
 	<!--ajouter image-->
 	<div class="modal-add-img hidden">
+
 		<div class="modal-add-img-nav">
-		<button class="btn-back-gallery"><i class="bi bi-arrow-left"></i></button>
-		<button class="btn-modal-close"><i class="bi bi-x-lg"></i></button>
+			<button class="btn-back-gallery"><i class="bi bi-arrow-left"></i></button>
+			<button class="btn-modal-close"><i class="bi bi-x-lg"></i></button>
 		</div>
+
 		<div>
 			<h3 class="modal-title">Ajout photo</h3>
+
 			<div class="admin-img">
-				<!-- contenu à faire en JS -->
-				<form enctype="multipart/form-data" method="post" name="fileinfo" id="add-photo-form">
+				<!-- contenu injecté en JS -->
+				<form  id="add-photo-form" enctype="multipart/form-data" method="post" name="fileinfo">
+					
+					<!-- Zone de téléchargement -->
+					<div class="upload-area">
+						<i class="bi bi-image"></i>
+						<p>+ Ajouter photo</p>
+						<input type="file" id="photoInput" name="image" accept="image/*" hidden>
+					</div>
+
+					<!-- Aperçu de l’image -->
+					<div class="preview hidden">
+						<img id="previewImage" alt="Aperçu de l'image">
+					</div>
+
+					<!--
 					<label for="image">+ Ajouter photo</label>
 					<input type="file" id="image" name="image" accept="image/*" required>
+					-->
 
 					<label for="title">Titre</label>
 					<input type="text" id="title" name="title" required>
@@ -133,7 +152,10 @@
 					</select>
 
 					<button type="submit" class="btn-validate">Valider</button>
+				    <p class="add-img-error-msg">Erreur d'ajout des données</p>
+				
 				</form>
+
 			</div>
 		</div>
 	</div>
