@@ -1,9 +1,14 @@
-/////////// GALERIE D'IMAGES AVEC LES TRAVAUX DE L'API ///////////
+///////// JS EXEMPLE PORTFOLIO ARCHITECTE SOPHIE BUEL IZ //////////
+
+
+////////////////////////////////////////
+/////////// GALLERY PORFOLIO ///////////
+////////////////////////////////////////
 
     // recup de la div qui va contenir la galerie et création avec le paramètre data seul (cf plus bas)
     const galleryPortfolio = document.querySelector(".gallery");
 
-    // PROMISES on crée une fonction createGallery qui va créer la galerie
+    // on crée une fonction createGallery qui va créer la galerie
     const createGallery = (data, gallery = galleryPortfolio, isHomePage = true) => {
 
         // on vide le contenu initial de la section (on peut aussi le mettre en commentaire dans le html)
@@ -63,8 +68,11 @@
     };
 
 
+/////////////////////////////////////////////////////////
+/////////// RECUPERATION DES TRAVAUX DE L'API ///////////
+/////////////////////////////////////////////////////////
 
-// RECUPERER LES DONNEES DE L'API avec fonction asynchrone ASYNC AWAIT (ancienne syntaxe .then)
+// async await promise
 
     const getWorks = async () => {
         // variable response qui va chercher les données
@@ -92,8 +100,9 @@
     }
 
 
-
-    /////////// FILTRES ///////////
+//////////////////////////////////////////
+/////////// FILTRES CATEGORIES ///////////
+//////////////////////////////////////////
 
     //retirer la classe active de tous les boutons et ajouter la classe active au bouton cliqué
     const removeActiveClass = (activeButton) => {
@@ -158,8 +167,9 @@
     
 
 
-
-/////////// GESTION DE L'INTERFACE ADMIN ///////////
+///////////////////////////////////////
+/////////// INTERFACE ADMIN ///////////
+///////////////////////////////////////
 
     const loginAdminOk = () => {
 
@@ -202,8 +212,9 @@
 
     }
 
-
+//////////////////////////////
 /////////// MODALE ///////////
+//////////////////////////////
 
 
     ////* Récupération des éléments du DOM *////
@@ -263,10 +274,13 @@
         }
     });
 
+/////////////////////////////////////////////////////
+/////////// MODULES INTERNES DE LA MODALE ///////////
+/////////////////////////////////////////////////////
 
-    ////* Modules internes galerie et ajout photo *////
 
-    // Navigation vers la section "ajout photo"
+    ////* Navigation entre la section gallery admin et ajout photo *////
+
     const goToAddImageSection = () => {
         showModalSection(true);
         loadCategories();  // charge les catégories dans le <select>
@@ -281,6 +295,7 @@
     
 
     ////* Chargement des catégories dans le formulaire d’ajout *////
+
     const loadCategories = async () => {
         try {
             const response = await fetch("http://localhost:5678/api/categories");
@@ -295,7 +310,8 @@
             const select = document.querySelector("#category");
 
             // On réinitialise le contenu
-            select.innerHTML = '<option value="">-- Choisir --</option>';
+            // ????? Comment éviter d'avoir une case vide dans la liste déroulante? 
+            select.innerHTML = '<option value=""></option>';
 
             // On ajoute chaque catégorie comme <option>
             categories.forEach((cat) => {
@@ -309,99 +325,116 @@
         }
     }
 
-    
-////* Gestion du formulaire d’ajout de photo *////
+///////////////////////////////////////////////////
+/////////// Formulaire d’ajout de photo ///////////
+///////////////////////////////////////////////////
 
-// recupère l'emplacement à remplir d'un message de validation ou d'echec
-const errorAddImg = document.querySelector(".add-img-error-msg");
-const msgAddImgOK = document.querySelector(".add-img-ok-msg");
 
-// Récupère les éléments pour la préview interne de add-img
-const photoInput = document.getElementById("photoInput");
-const uploadArea = document.querySelector(".upload-area");
-const preview = document.querySelector(".preview");
-const previewImage = document.getElementById("previewImage");
+// A RESOUDRE 
 
-// Clic sur la zone -> déclenche input file
-uploadArea.addEventListener("click", () => {
-  photoInput.click();
-});
+// La preview ne s'affiche pas en remplacement / par dessus le champ d'upload
+// bouton valider qui devient vert une fois les champs remplis
+// nettoyage du formulaire qui pour l'instant garde le titre d'un essai à l'autre
+// voir une fois tout validé si --> retour à la modale galerie avec le message succes, ou retour à la page modifiée
 
-// Affiche un aperçu de l'image choisie
-photoInput.addEventListener("change", () => {
-  const file = photoInput.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      previewImage.src = e.target.result;
-      preview.classList.remove("hidden");  // montre l’aperçu
-      uploadArea.classList.add("hidden");  // cache la zone d’upload
-    };
-    reader.readAsDataURL(file);
-  }
-});
 
-// gestion du formulaire d'ajout d'image à la database et à la galerie portfolio
-addPhotoForm.addEventListener("submit", async (event) => {
-    event.preventDefault(); // empêche le rechargement de la page
 
-    // Réinitialiser les messages avant chaque tentative
-        errorAddImg.style.display = "none";
-        msgAddImgOK.style.display = "none";
 
-      // Vérifie que l’image a bien été choisie
-        if (!photoInput.files[0]) {
-            errorAddImg.textContent = "Veuillez sélectionner une image.";
-            errorAddImg.style.display = "block";
-            return;
-        }
+    // recupère l'emplacement à remplir d'un message de validation ou d'echec
+    const errorAddImg = document.querySelector(".add-img-error-msg");
+    const msgAddImgOK = document.querySelector(".add-img-ok-msg");
 
-// Récupère les données du formulaire (image, titre, catégorie)
-    const formData = new FormData(addPhotoForm);
+    // Récupère les éléments pour la préview interne de add-img
+    const photoInput = document.getElementById("photoInput");
+    const uploadArea = document.querySelector(".upload-area");
+    const preview = document.querySelector(".preview");
+    const previewImage = document.getElementById("previewImage");
 
-    try {
-        const response = await fetch("http://localhost:5678/api/works", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem("token")}`
-                // ⚠️ Ne pas mettre Content-Type, FormData le gère automatiquement
-            },
-            body: formData
-        });
+    // Clic sur la zone -> déclenche input file
+    uploadArea.addEventListener("click", () => {
+    photoInput.click();
+    });
 
-        if (response.ok) {
-            // On recharge la liste des travaux depuis l’API
-            works = await getWorks();
-
-            // Mise à jour de la galerie sur la page principale
-            createGallery(works);
-            // Mise à jour de la galerie dans la modale admin
-            createGallery(works, adminGallery, false);
-
-            // Réinitialise le formulaire
-            addPhotoForm.reset();
-
-            // Réinitialiser la preview et la zone upload
-            previewImage.src = "";
-            preview.classList.add("hidden");
-            uploadArea.classList.remove("hidden");    
-
-            // Retour automatique à la galerie de la modale
-            showModalSection(false);
-
-            //message de validation à afficher sur la modale partie gallery;
-            msgAddImgOK.style.display = "block";
-        } else {
-            //message d'erreur à afficher sous le formulaire
-            errorAddImg.style.display = "block";
-        }
-    } catch (error) {
-        console.error(error);
-        alert("❌ Impossible d’ajouter l’image (problème serveur ou réseau)");
+    // Affiche un aperçu de l'image choisie
+    photoInput.addEventListener("change", () => {
+    const file = photoInput.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+        previewImage.src = e.target.result;
+        preview.classList.remove("hidden");  // montre l’aperçu
+        uploadArea.classList.add("hidden");  // cache la zone d’upload
+        };
+        reader.readAsDataURL(file);
     }
-});
+    });
+
+    // gestion du formulaire d'ajout d'image à la database et à la galerie portfolio
+    addPhotoForm.addEventListener("submit", async (event) => {
+        event.preventDefault(); // empêche le rechargement de la page
+
+        // Réinitialiser les messages avant chaque tentative
+            errorAddImg.style.display = "none";
+            msgAddImgOK.style.display = "none";
+
+        // Vérifie que l’image a bien été choisie
+            if (!photoInput.files[0]) {
+                errorAddImg.textContent = "Veuillez sélectionner une image.";
+                errorAddImg.style.display = "block";
+                return;
+            }
+
+    // Récupère les données du formulaire (image, titre, catégorie)
+        const formData = new FormData(addPhotoForm);
+
+        try {
+            const response = await fetch("http://localhost:5678/api/works", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                    // Ne pas mettre Content-Type, FormData le gère automatiquement
+                },
+                body: formData
+            });
+
+            if (response.ok) {
+                // On recharge la liste des travaux depuis l’API
+                works = await getWorks();
+
+                // Mise à jour de la galerie sur la page principale
+                createGallery(works);
+                // Mise à jour de la galerie dans la modale admin
+                createGallery(works, adminGallery, false);
+
+                // Réinitialise le formulaire
+                addPhotoForm.reset();
+
+                // Réinitialiser la preview et la zone upload
+                previewImage.src = "";
+                preview.classList.add("hidden");
+                uploadArea.classList.remove("hidden");    
+
+                // Retour automatique à la galerie de la modale
+                showModalSection(false);
+
+                //message de validation à afficher sur la modale partie gallery;
+                msgAddImgOK.style.display = "block";
+            } else {
+                //message d'erreur à afficher sous le formulaire
+                errorAddImg.style.display = "block";
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Impossible d’ajouter l’image (problème serveur ou réseau)");
+        }
+    });
 
 
-// Appel des fonctions
+
+
+//////////////////////////////
+///// APPEL DES FONCTIONS ////
+//////////////////////////////
+
 init(); // travaux et filtres
 loginAdminOk(); // login

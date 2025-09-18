@@ -314,8 +314,12 @@ input[type="submit"]{
 }
 
 /*contenu sous le titre des modules*/
-.admin-gallery, .admin-img{
-	padding: 50px 0 50px 0;
+.modal h3{
+	padding-bottom: 40px;
+}
+.separate{
+	margin: 40px 0 40px 0;
+	height: 1px;
 	border-bottom : 2px solid #B3B3B3;
 }
 
@@ -324,11 +328,12 @@ input[type="submit"]{
 	font-size : 14px;
 	color: white ;
 	border-radius: 50px;
-	margin-top: 40px;
 	padding: 8px 16px;
 	font-family: 'Syne';
 	cursor: pointer;
 	border: none;
+	width: 237px;
+	align-self: center;
 }
 .btn-add-img{
 	background-color: #1D6154;
@@ -352,7 +357,6 @@ input[type="submit"]{
 }
 
 /*croix des icones images */
-
 .admin-gallery figure {
 	position: relative;
 }
@@ -375,10 +379,10 @@ input[type="submit"]{
 }
 
 /*formulaire module 2*/
-
 .modal-add-img form{
 	display: flex;
 	flex-direction: column;
+	text-align: left;
 	gap : 20px;
 }
 .modal-add-img-nav{
@@ -386,50 +390,70 @@ input[type="submit"]{
 	justify-content: space-between;
 	margin-bottom: 20px;
 }
-.modal-add-img input{
+.modal-add-img input, .modal-add-img select {
+	background: #fff;
 	height: 40px;
 	border: none;
 	box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.09);
 }
 
-/* class général pour le JS*/
+/* class générale pour le JS*/
 .hidden {
 	display: none;
 }
 
 /* Zone de téléchargement (avant choix image) */
+
 .upload-area {
   background-color: #E8F1F6;
-  border-radius: 5px;
-  padding: 20px;
+  border-radius: 3px;
   text-align: center;
   cursor: pointer;
+  min-height: 169px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   position: relative;
 }
-
 .upload-area i {
   font-size: 40px;
   color: #B9C5CC;
 }
-
+.upload-area p{
+	background-color: #CBD6DC;
+	border-radius: 50px;
+	padding: 15px;
+}
+.upload-area span {
+	margin-top : 10px;
+	font-size : 10px;
+	font-weight : 400;
+	color: #444444;
+}
 .upload-area p {
   margin: 10px 0 0;
-  color: #444;
+  color: #306685;
   font-size: 14px;
+  font-weight : 500;
 }
 
-/* Aperçu de l’image */
+/* Aperçu de l’image.*/
 .preview {
-  margin: 15px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #E8F1F6;
+  min-height: 169px; /* même hauteur que .upload-area */
 }
-
 .preview img {
   max-width: 100%;
   max-height: 200px;
-  object-fit: cover;
-  border-radius: 5px;
+  object-fit: contain;
 }
-
+.bi-image{
+	width: 76px;
+}
 
 
 /*footer*/
